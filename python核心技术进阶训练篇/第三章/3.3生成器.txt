@@ -1,0 +1,65 @@
+如何使用生成器函数实现迭代对象
+实际案例：实现一个可迭代对象的类，它能迭代出给定范围内所有素 数：
+解决方案：将该类的__iter__的方法实现生成器函数，每次yield返回一个素数。
+root@ubuntu:~# vim 生成器函数演示.py
+root@ubuntu:~# python3 生成器函数演示.py
+in f() 1
+1
+root@ubuntu:~# python3 生成器函数演示.py
+in f() 1
+1
+root@ubuntu:~# vim 生成器函数演示.py
+root@ubuntu:~# python3 生成器函数演示.py
+in f() 1
+1
+in f() 2
+2
+root@ubuntu:~# vim 生成器函数演示.py
+root@ubuntu:~# python3 生成器函数演示.py
+in f() 1
+1
+in f() 2
+2
+in f() 3
+3
+Traceback (most recent call last):
+  File "生成器函数演示.py", line 14, in <module>
+    print(next(g))
+StopIteration
+root@ubuntu:~# vim 生成器函数演示.py
+root@ubuntu:~# python3 生成器函数演示.py
+in f() 1
+1
+in f() 2
+2
+in f() 3
+3
+root@ubuntu:~# vim 生成素数.py
+root@ubuntu:~# python3 生成素数.py
+2
+3
+5
+7
+11
+13
+17
+19
+23
+29
+31
+37
+41
+43
+47
+53
+59
+61
+67
+71
+73
+79
+83
+89
+97
+root@ubuntu:~#
+

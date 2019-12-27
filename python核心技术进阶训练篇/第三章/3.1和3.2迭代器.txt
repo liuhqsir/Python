@@ -1,0 +1,138 @@
+  3-1 如何实现可迭代对象和迭代器对象（1）
+  实际案例：某软件要求，从网络抓取各个城市气温信息，并依次显示
+	北京：15~20
+	天津：17~22
+	长春：12~18
+  如果一次抓取所有城市天气再显示，显示第一个城市气温时，有很高的延时，并且浪费存储空间，我们期望以“用时访问”的策略，并且能把所有城市气温封装到一个对象里，可用for语句进行迭代，如何解决？
+root@ubuntu:~# python3
+Python 3.5.2 (default, Nov 12 2018, 13:43:14)
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> l = [1,2,3,4]
+>>> s = 'abcdefg'               ##l和s是两个可迭代对象。
+>>> for x in l: print(x)
+...
+1
+2
+3
+4
+>>> for x in s: print(x)
+...
+a
+b
+c
+d
+e
+f
+g
+>>> iter(l)
+<list_iterator object at 0xb7224dac>
+>>> iter(s)
+<str_iterator object at 0xb7224e0c>
+>>> iter(5)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'int' object is not iterable        ##int对象不可迭代。
+>>> l.
+l.__add__(           l.__imul__(          l.__setitem__(
+l.__class__(         l.__init__(          l.__sizeof__(
+l.__contains__(      l.__iter__(          l.__str__(
+l.__delattr__(       l.__le__(            l.__subclasshook__(
+l.__delitem__(       l.__len__(           l.append(
+l.__dir__(           l.__lt__(            l.clear(
+l.__doc__            l.__mul__(           l.copy(
+l.__eq__(            l.__ne__(            l.count(
+l.__format__(        l.__new__(           l.extend(
+l.__ge__(            l.__reduce__(        l.index(
+l.__getattribute__(  l.__reduce_ex__(     l.insert(
+l.__getitem__(       l.__repr__(          l.pop(
+l.__gt__(            l.__reversed__(      l.remove(
+l.__hash__           l.__rmul__(          l.reverse(
+l.__iadd__(          l.__setattr__(       l.sort(
+>>> l.__iter__()
+<list_iterator object at 0xb711d0ec>
+  迭代对象有__iter__或__getiterm__方法
+>>> t = iter(l)
+>>> t.__
+t.__class__(         t.__hash__(          t.__reduce__(
+t.__delattr__(       t.__init__(          t.__reduce_ex__(
+t.__dir__(           t.__iter__(          t.__repr__(
+t.__doc__            t.__le__(            t.__setattr__(
+t.__eq__(            t.__length_hint__(   t.__setstate__(
+t.__format__(        t.__lt__(            t.__sizeof__(
+t.__ge__(            t.__ne__(            t.__str__(
+t.__getattribute__(  t.__new__(           t.__subclasshook__(
+t.__gt__(            t.__next__(
+>>> t.next()
+>>> t.__next__()
+1
+>>> t.__next__()
+2
+>>> t.__next__()
+3
+>>> t.__next__()
+4
+>>> t.__next__()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration                              ####迭代结束抛出这个玩意。
+  解决方案 〉1：实现一个迭代器对象Weatheriterator,next方法每次返回一个城市 气温。2：实现一个可迭代对象Weatheriterable,__iter__方法返回一个迭代器对象。
+                                   ^
+from collections import Iterable,Iterator
+>>> Iterator.
+Iterator.__abstractmethods__
+Iterator.__base__(
+Iterator.__bases__
+Iterator.__basicsize__
+Iterator.__call__(
+Iterator.__class__(
+Iterator.__delattr__(
+Iterator.__dict__
+Iterator.__dictoffset__
+Iterator.__dir__(
+Iterator.__doc__
+Iterator.__eq__(
+Iterator.__flags__
+Iterator.__format__(
+Iterator.__ge__(
+Iterator.__getattribute__(
+Iterator.__gt__(
+Iterator.__hash__(
+Iterator.__init__(
+Iterator.__instancecheck__(
+Iterator.__itemsize__
+Iterator.__iter__(
+Iterator.__le__(
+Iterator.__lt__(
+Iterator.__module__
+Iterator.__mro__
+Iterator.__name__
+Iterator.__ne__(
+Iterator.__new__(
+Iterator.__next__(
+Iterator.__prepare__(
+Iterator.__qualname__
+Iterator.__reduce__(
+Iterator.__reduce_ex__(
+Iterator.__repr__(
+Iterator.__setattr__(
+Iterator.__sizeof__(
+Iterator.__slots__
+Iterator.__str__(
+Iterator.__subclasscheck__(
+Iterator.__subclasses__(
+Iterator.__subclasshook__(
+Iterator.__text_signature__
+Iterator.__weakrefoffset__
+Iterator._abc_cache
+Iterator._abc_invalidation_counter
+Iterator._abc_negative_cache
+Iterator._abc_negative_cache_version
+Iterator._abc_registry
+Iterator._dump_registry(
+Iterator.mro(
+Iterator.register(
+>>> Iterator.__abstractmethods__
+frozenset({'__next__'})
+>>> Iterable.__abstractmethods__
+frozenset({'__iter__'})

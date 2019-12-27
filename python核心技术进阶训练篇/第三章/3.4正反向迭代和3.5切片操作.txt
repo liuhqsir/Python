@@ -1,0 +1,153 @@
+如何进行反向迭代以及如何实现反向迭代？
+实际案例：实现一个连续浮点数发生器FloatRange(和range类似)，根据给定范围（start,end）和步进值（step）产生一些连续浮点数，如迭代FloatRange(3.0,4.0,0.2)可产生序列：
+正向：3.0 3.2 3.4 3.6 3.8 4.0     
+反向：4.0 3.8 3.6 3.4 3.2 3.0
+root@ubuntu:~# python3
+Python 3.5.2 (default, Nov 12 2018, 13:43:14)
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> l = [1,2,3,4,5]
+>>> l.reverse()                    ##这个之后l变成[5,4,3,2,1]
+>>> print(l.reverse())             ##这个之后l变成[1,2,3,4,5]
+None
+>>> l
+[1, 2, 3, 4, 5]
+>>> l.reverse()
+>>> l
+[5, 4, 3, 2, 1]
+>>> l[::-1]
+[1, 2, 3, 4, 5]
+>>> reversed(l)
+<list_reverseiterator object at 0xb727ee8c>
+>>> iter(l)
+<list_iterator object at 0xb727eeac>
+>>> for x in reversed(l):
+...     print(x)
+...
+1
+2
+3
+4
+5
+>>> l.__reversed__()
+<list_reverseiterator object at 0xb727ee8c>
+>>> l
+[5, 4, 3, 2, 1]
+root@ubuntu:~# vim 正反向迭代.py
+root@ubuntu:~# python3 !$
+python3 正反向迭代.py
+1.0
+1.5
+2.0
+2.5
+3.0
+3.5
+4.0
+root@ubuntu:~# vim 正反向迭代.py                  ##修改成反向排序
+root@ubuntu:~# python3 正反向迭代.py
+4.0
+3.5
+3.0
+2.5
+2.0
+1.5
+1.0
+root@ubuntu:~# vim 正反向迭代.py                 ##删除reversed定义
+root@ubuntu:~# python3 正反向迭代.py             ##出错，为什么不能用系统的reversed把正向的排序进行反向操作生成反向的排序？
+Traceback (most recent call last):
+  File "正反向迭代.py", line 24, in <module>
+    for x in reversed(FloatRange(1.0,4.0,0.5)):
+TypeError: argument to reversed() must be a sequence
+如何对迭代器做切片操作？
+实际案例：有某个文本文件，我们想读取其中某范围的内容，如100－300行之间的内容，python中文本文件是可迭代对象，我们是否可以使用类似列表切片 的方式得到一个100－300行文件内容的生成器？
+f[100:300]     可以么？^C
+>>> f[20:50]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: '_io.TextIOWrapper' object is not subscriptable
+>>> lines = f.readlines()
+>>> lines
+['Scanning for Btrfs fil............................
+>>> lines[20:50]
+['\x1b[K[\x1b[0;1;31m*\x1b..........................
+>>> for line in f:
+...     print(line)
+...                                     ##没有返回，游标已经到文本末尾
+>>> f.seek(0)
+0
+>>> for line in f:
+...     print(line)
+...
+Scanning for Btrfs filesystems.......................
+root@ubuntu:~# fg
+python3
+>>> from itertools import islice
+>>> islice(f,20,50)
+<itertools.islice object at 0xb727be14>
+>>> f.seek(0)
+0
+>>> for line in islice(f,20,50):
+...     print(line)
+...
+[**    ] (2 of 2) A start job is runnin...........................
+>>> islice(f,500)
+<itertools.islice object at 0xb7176e3c>     ##500表示的结尾值，从开头到500
+>>> islice(f,500,None)
+<itertools.islice object at 0xb727b4dc>     ##从500到结尾
+>>> islice(f,10,-10)                        ##负索引是不被支持的
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: Indices for islice() must be None or an integer: 0 <= x <= sys.maxsize.
+>>> l = range(20)
+>>> l
+range(0, 20)
+>>> print(l)
+range(0, 20)
+>>> for x in l:
+...     print(x)
+...
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+>>> t = iter(l)
+>>> t
+<range_iterator object at 0xb6dcab48>
+>>> for x in islice(t,5,10):
+...     print(x)
+...
+5
+6
+7
+8
+9
+>>> for x in t:                      ##islice会丢失（消耗）迭代对象
+...     print(x)
+...
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+
