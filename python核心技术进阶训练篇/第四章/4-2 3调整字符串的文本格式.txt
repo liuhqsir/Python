@@ -1,0 +1,79 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+4-2  如何判断字符串a是否以字符串b开头或结尾？
+     实际案例：某文件系统目录下有一系列文件：
+quitchsort.c
+grph.py
+heap.java
+install.sh
+stack.cpp
+.....
+编写程序给其中所有.sh文件和.py文件加上用户执行权限
+解决方案：使用字符串的str.startwith()和str.endswith()方法。注意：多个匹配时参数使用元组。
+>>> $ ll
+total 8
+-rw-r--r-- 1 Administrator 197121 2336 十二月 29 20:46 4-1拆分字符串.txt
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 a.sh
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 b.py
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 c.h
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 d.java
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 e.py
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 f.cpp
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 g.sh
+-rw-r--r-- 1 Administrator 197121    0 十二月 29 20:53 h.c
+-rw-r--r-- 1 Administrator 197121  791 十二月 29 19:45 str.split.py
+>>> os.chdir('d:\\git\\Python\\python核心技术进阶训练篇\\第四章')
+>>> os.listdir('.')
+['4-1拆分字符串.txt', 'a.sh', 'b.py', 'c.h', 'd.java', 'e.py', 'f.cpp', 'g.sh', 'h.c', 'str.split.py']
+>>> s = 'g.sh'
+>>> s.endswith('.sh')
+True
+>>> s.endswith('.py')
+False
+>>> s.endswith(('.sh','.py'))
+True
+>>> s.endswith(['.sh','.py'])                     ##可以是元组，不能是列表
+Traceback (most recent call last):
+  File "<pyshell#19>", line 1, in <module>
+    s.endswith(['.sh','.py'])
+TypeError: endswith first arg must be str or a tuple of str, not list
+>>> [name for name in os.listdir('.') if name.endswith(('.sh','.py'))]
+['a.sh', 'b.py', 'e.py', 'g.sh', 'str.split.py']
+>>> os.stat('e.py')
+os.stat_result(st_mode=33206, st_ino=844424930139373, st_dev=6353, st_nlink=1, st_uid=0, st_gid=0, st_size=0, st_atime=1577623986, st_mtime=1577623986, st_ctime=1577623986)
+>>> os.stat('e.py').st_mode
+33206
+>>> oct(33206)
+'0o100666'
+>>> stat.S_IXUSR
+64
+>>> oct(64)
+'0o100'
+如何调整文本字符串中的文本格式
+某软件的log文件，其中的日期格式为yyyy-mm-dd:我们想把其中日期改为美国日期的格式“mm/dd/yyyy”,如何操作？
+解决方案：使用正则表达式re.sub()方法做字符串替换，利用正则表达式的捕获组，捕获每个部分内容，在替换字符串中调整各个捕获组的顺序。
+>>> log = open('.\\Python 3.8.1 (64-bit)_20191227201615.log').read()
+>>> log
+[0EC8:0E78][2019-12-27T20:16:15]i001: Burn v3.11.1.2318, Windows v6.1 (Build 7601: Service Pack 1), path: C:\Windows\Temp\{DA4A2B34-F657-4D05-8080-4A3EE7FDE267}\.cr\python-3.8.1-amd64.exe
+[0EC8:0E78][2019-12-27T20:16:15]i000: Initializing string variable 'ActionLikeInstalling' to value 'Installing'
+[0EC8:0E78][2019-12-27T20:16:15]i000: Initializing string variable 'ActionLikeInstallation' to value 'Setup'
+...................
+>>> import re
+>>> re.sub('(\d{4})-(\d{2})-(\d{2})','\1\2')
+KeyboardInterrupt
+>>> r'\1'
+'\\1'
+>>> '\1'
+'\x01'
+>>> len('\1')
+1
+>>> len(r'\1')
+2
+>>> newlog = re.sub('(\d{4})-(\d{2})-(\d{2})',r'\2/\3/\1',log)
+>>> print(newlog)
+[0EC8:0E78][12/27/2019T20:16:15]i001: Burn v3.11.1.2318, Windows v6.1 (Build 7601: Service Pack 1), path: C:\Windows\Temp\{DA4A2B34-F657-4D05-8080-4A3EE7FDE267}\.cr\python-3.8.1-amd64.exe
+[0EC8:0E78][12/27/2019T20:16:15]i000: Initializing string variable 'ActionLikeInstalling' to value 'Installing'
+[0EC8:0E78][12/27/2019T20:16:15]i000: Initializing string variable 'ActionLikeInstallation' to value 'Setup'
+.................................
+>>> re.sub('(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})',r'\g<month>/\g<day>/\g<year>','2019-12-20')
+'12/20/2019'

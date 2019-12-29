@@ -1,0 +1,48 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+>>> 第四章 4－1 如何拆分含有多种分隔符的字符串？该字符串包含多种不同的分隔符，例如：
+>>> s='ab;cd|efg|hi,jkl|mno\tpqr;st,uvw\txyz'
+>>> 其中，；｜\t都是分隔符号，如何处理？
+>>> 解决方案：方法一：连续使用str.split()方法，每次处理一种分隔符号。方法二：使用正则表达式的re.split()方法，一次性拆分字符串。
+>>> s='ab;cd|efg|hi,jkl|mno\tpqr;st,uvw\txyz'
+>>> res = s.split(';')
+>>> list(map(lambda x: x.split('|'),res))
+[['ab'], ['cd', 'efg', 'hi,jkl', 'mno\tpqr'], ['st,uvw\txyz']]
+>>> #这个结果中列表中还含有列表，再直接用map的时候会对列表进行split方法，这是不可以的。
+>>> t = []
+>>> list(map(lambda x: t.extend(x.split('|')),res))
+[None, None, None]
+>>> t
+['ab', 'cd', 'efg', 'hi,jkl', 'mno\tpqr', 'st,uvw\txyz']
+>>> #这样得到的就是一个一维列表了
+>>> res = t
+>>> t = []
+>>> list(map(lambda x: t.extend(x.split('|')),res))
+[None, None, None, None, None, None]
+>>> t
+['ab', 'cd', 'efg', 'hi,jkl', 'mno\tpqr', 'st,uvw\txyz']
+>>> res = t
+>>> t = []
+>>> list(map(lambda x: t.extend(x.split('|')),res))
+[None, None, None, None, None, None]
+>>> t
+['ab', 'cd', 'efg', 'hi,jkl', 'mno\tpqr', 'st,uvw\txyz']
+>>> list(map(lambda x: t.extend(x.split(',')),res))
+[None, None, None, None, None, None]
+>>> t
+['ab', 'cd', 'efg', 'hi,jkl', 'mno\tpqr', 'st,uvw\txyz', 'ab', 'cd', 'efg', 'hi', 'jkl', 'mno\tpqr', 'st', 'uvw\txyz']
+>>> res = t
+>>> t = []
+>>> list(map(lambda x: t.extend(x.split('\t')),res))
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+>>> t
+['ab', 'cd', 'efg', 'hi,jkl', 'mno', 'pqr', 'st,uvw', 'xyz', 'ab', 'cd', 'efg', 'hi', 'jkl', 'mno', 'pqr', 'st', 'uvw', 'xyz']
+>>> #这样就得到用所有分隔符拆分得到的结果了，我们用循环写出来就如str.split.py文件所示。
+>>> #使用re.split()方法：
+>>> import re
+>>> help(re.split)
+Help on function split in module re:
+
+split(pattern, string, maxsplit=0, flags=0)
+>>> re.split(r'[,;\t|]+',s)
+['ab', 'cd', 'efg', 'hi', 'jkl', 'mno', 'pqr', 'st', 'uvw', 'xyz']

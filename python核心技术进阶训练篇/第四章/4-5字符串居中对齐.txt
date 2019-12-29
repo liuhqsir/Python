@@ -1,0 +1,46 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+  如何对字符串进行左右居中对齐？
+  实际案例：某个字典存储了一系列属性值，{hwDetect:"<0112>" gxDepthBits:"<32>" gxResolution:"<1024x768>" gxRefresh:"<60>" fullSppha:"<1>" lodDist:"<100.0>" DistCull:"<500.0>"},在程序中，我们想以以下的工整的格式将其内容输出，如何处理？
+  解决方案：方法一：使用字符串的str.ljust(),str.rjust(),s.center()进行左右居中对齐。方法二：使用format()方法，传递类似'<20,>20,^20'参数完成同样任务。
+>>> s='abc'
+>>> s.ljust(20)
+'abc                 '
+>>> s.ljust(20,'=')
+'abc================='
+>>> s.rjust(20,'=')
+'=================abc'
+>>> s.center(20)
+'        abc         '
+>>> format(s,'<20')
+'abc                 '
+>>> format(s,'>20')
+'                 abc'
+>>> format(s,'^20')
+'        abc         '
+>>> d={"hwDetect":"<0112>","gxDepthBits":"<32>","gxResolution":"<1024x768>","gxRefresh":"<60>","fullSppha":"<1>","lodDist":"<100.0>","DistCull":"<500.0>"}
+
+>>> d
+{'hwDetect': '<0112>', 'gxDepthBits': '<32>', 'gxResolution': '<1024x768>', 'gxRefresh': '<60>', 'fullSppha': '<1>', 'lodDist': '<100.0>', 'DistCull': '<500.0>'}
+>>> d.kdys()
+Traceback (most recent call last):
+  File "<pyshell#15>", line 1, in <module>
+    d.kdys()
+AttributeError: 'dict' object has no attribute 'kdys'
+>>> d.keys()
+dict_keys(['hwDetect', 'gxDepthBits', 'gxResolution', 'gxRefresh', 'fullSppha', 'lodDist', 'DistCull'])
+>>> max(list(map(len,d.keys())))
+12
+>>> w = max(list(map(len,d.keys())))
+>>> for k in d:
+	print(k.ljust(w),':',d[k])
+
+	
+hwDetect     : <0112>
+gxDepthBits  : <32>
+gxResolution : <1024x768>
+gxRefresh    : <60>
+fullSppha    : <1>
+lodDist      : <100.0>
+DistCull     : <500.0>
+>>> 
