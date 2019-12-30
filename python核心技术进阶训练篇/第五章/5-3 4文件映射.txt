@@ -1,0 +1,94 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+    5-3如何设置文件的缓冲？  实际案例：将文件内容定稿到硬件设备时，使用系统调用，这类I/O操作的时间很长，为了减少I/O操作的次数，文件通常使用缓冲区。（有足够多的数据才进行系统调用）文件的缓冲行为，分为全缓冲，行缓冲，无缓冲。如何设置python中文件对象的缓冲行为？
+>>> f = open('demo.txt','w')
+>>> f.write('abc')
+3
+>>> f.write('+' * 4093)
+4093
+>>> f.write('-')
+1
+>>> f.write('-' * 4096)                  #使用另一个终端tail -f这个文件观察输出
+4096
+>>> f.close()
+    解决方案：全缓冲：open函数的buffering设置为大于1的整数n,n为缓冲区大小；行缓冲：open函数的buffering设置为1；无缓冲：open函数的buffering设置为0。
+>>> f = open('demo.txt','w',buffering=2048)
+>>> f.write('a' * 1024)
+1024
+>>> f.write('b' * 1024)
+1024
+>>> f.write('c')
+1
+>>> f.write('b' * 1024)
+1024
+>>> f.write('b' * 1024)
+1024
+>>> f.write('b' * 1024)
+1024
+>>> f.write('b' * 1024)
+1024
+>>> f.write('b' * 1024)
+1024
+>>> f.write('b' * 1024)
+1024
+>>> 1024 * 8
+8192                                    #在输入了2048个之后还是没有输出 
+>>> f = open('demo.txt','w',buffering=1)
+>>> f.write('abc')
+3
+>>> f.write('def')
+3
+>>> f.write('\n')
+1
+>>> f.close()                           #在输入了\n之后 终端输出了abcdef
+>>> f = open('demo.txt','w',buffering=0)
+Traceback (most recent call last):
+  File "<pyshell#38>", line 1, in <module>
+    f = open('demo.txt','w',buffering=0)
+ValueError: can't have unbuffered text I/O
+>>> f.write('a')
+Traceback (most recent call last):
+  File "<pyshell#39>", line 1, in <module>
+    f.write('a')
+ValueError: I/O operation on closed file.
+    在此python3上，无缓存的方法不能这样使用。
+
+
+>>> 5-5 如何将文件映射到内存？  
+	实际案例：1、在访问某些二进制文件时，希望能把文件映射到内存中，可以实现随机访问。（framebuffer设备文件）2、某些嵌入式设备，寄存器被编址到内存空间，我们可以映射/dev/mem某范围，去访问这些寄存器3、如果多个进程映射同一个文件，还能实现进程通信的目的。
+>>> #解决议案：使用标准库中mmap模块的mmap()函数，它需要一个打开的文件描述符作为参数。
+>>> import mmap
+>>> import os
+>>> os.remove('py3.txt')
+>>> os.chdir('d:\git\Python\python核心技术进阶训练篇\第五章')
+>>> f = open('demo.bin','r+b')
+>>> f.fileno()
+3
+>>> m = mmap.mmap(f.fileno(),0,access=mmap.ACCESS_WRITE)
+>>> m
+<mmap.mmap object at 0x0000000002D95F30>
+>>> m[0]
+0
+>>> m[:10]
+b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+>>> m[9]
+0
+>>> m[0]=255
+>>> m[1]=255
+>>> len(m)
+1048576
+>>> m[2]=254
+>>> m[1048575]=255
+>>> m[4:8] = b'\xff' * 4
+>>> mmap.PAGESIZE
+4096
+>>> m = mmap.mmap(f.fileno(),0,access=mmap.ACCESS_WRITE,offset=4096 * 8)
+Traceback (most recent call last):
+  File "<pyshell#40>", line 1, in <module>
+    m = mmap.mmap(f.fileno(),0,access=mmap.ACCESS_WRITE,offset=4096 * 8)
+OSError: [WinError 1132] 指定的基址或文件偏移量没有适当对齐。
+>>> m = mmap.mmap(f.fileno(),0,access=mmap.ACCESS_WRITE,offset=4096 * 16)
+>>> m = mmap.mmap(f.fileno(),4096,access=mmap.ACCESS_WRITE,offset=4096 * 16)
+>>> m[0:16]=b'\xaa' * 16
+>>> len(m)
+4096

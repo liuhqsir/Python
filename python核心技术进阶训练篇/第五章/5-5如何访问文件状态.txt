@@ -1,0 +1,51 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+    如何访问文件的状态？   
+    实际案例：在某些项目中，我们需要获得文件状态，例如：
+		1、文件的类型（普通文件，目录，符号链接，设备文件……）
+		2、文件的访问权限
+		3、文件的最后的访问/修改/节点状态更改时间
+		4、普通文件的大小………………
+	解决方案：系统调用：标准为库中os模块下的三个系统调用stat,fstat,lstat获取文件状态。快捷函数：标准库中os.path下的一些函数，使用起来更加简洁。
+>>> import os
+>>> os.stat('NEWS.txt')             #如果是链接文件，查看的是目标文件
+os.stat_result(st_mode=33206, st_ino=4368105984, st_dev=872666, st_nlink=1, st_uid=0, st_gid=0, st_size=879215, st_atime=1577376000, st_mtime=1576682878, st_ctime=1576682878)
+>>> os.lstat('NEWS.txt')            #如果是链接文件，查看的是快捷方式的文件 
+os.stat_result(st_mode=33206, st_ino=4368105984, st_dev=872666, st_nlink=1, st_uid=0, st_gid=0, st_size=879215, st_atime=1577376000, st_mtime=1576682878, st_ctime=1576682878)
+>>> os.fstat(open('NEWS.txt').fileno())     #参数是文件描述符，不是文件
+Traceback (most recent call last):
+  File "<pyshell#6>", line 1, in <module>
+    os.fstat(open('NEWS.txt').fileno())
+OSError: [WinError 6] 句柄无效。
+>>> s=os.stat('NEWS.txt')
+>>> s.st_mode
+33206
+>>> import stat
+>>> stat.S_ISDIR(s.st_mode)
+False
+>>> stat.S_ISREG(s.st_mode)
+True
+>>> s.st_mode & stat.S_IRUSR       #查看用户是否有读权限，非0为有读权限，0为无
+256
+>>> s.st_mode & stat.S_IXUSR
+0
+>>> s.st_mode & stat.S_IWUSR
+128
+>>> s.st_atime
+1577376000.0
+>>> import time
+>>> time.localtime(s.st_atime)
+time.struct_time(tm_year=2019, tm_mon=12, tm_mday=27, tm_hour=0, tm_min=0, tm_sec=0, tm_wday=4, tm_yday=361, tm_isdst=0)
+>>> s.st_size
+879215
+>>> os.path.isdir('NEWS.txt')
+False
+>>> os.path.islink('NEWS.txt')
+False
+>>> os.path.isfile('NEWS.txt')
+True
+>>> os.path.getctime('NEWS.txt')
+1576682878.0
+>>> os.path.getsize('NEWS.txt')
+879215
+>>> 

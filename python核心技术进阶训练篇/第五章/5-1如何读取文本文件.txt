@@ -1,0 +1,36 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+    如何读写文件？   
+    实际案例：某文本文件编码格式已知（如utf8,gbk,big5）,在python2,x和python3.x中分别如何读取文件？
+    解决方案：字符串的语义发生了变化：
+python2         python3
+str      -->	bytes
+unicode  -->	str
+    python2写入文件前对unicode编码，读入文件后对二进制字符串编码。python3  open函数指定t的文本模式，endcoding指定编码格式。
+SyntaxError: invalid character in identifier
+    这里是python3
+>>> 'abcdefg'
+'abcdefg'
+>>> ord('a')
+97
+>>> s=u'你好'
+>>> s.encode('utf-8')
+b'\xe4\xbd\xa0\xe5\xa5\xbd'
+>>> s.encode('gbk')
+b'\xc4\xe3\xba\xc3'
+>>> b'\xe4\xbd\xa0\xe5\xa5\xbd'.decode('gbk')
+'浣犲ソ'
+>>> b'\xe4\xbd\xa0\xe5\xa5\xbd'.decode('utf8')
+'你好'
+>>> b'iudhfauhfa'
+b'iudhfauhfa'
+>>> '你好'
+'你好'
+>>> f=open('py3.txt','wt',encoding='utf8')
+>>> f.write('你好，我爱中国人民币')
+10
+>>> f.close()
+>>> f=open('py3.txt','rt',encoding='utf8')
+>>> s = f.read()
+>>> print(s)
+你好，我爱中国人民币

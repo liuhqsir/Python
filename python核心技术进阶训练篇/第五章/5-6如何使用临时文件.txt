@@ -1,0 +1,40 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+	如何使用临时文件？   
+	实际案例：某项目中，我们从传感器采集数据，每收集到1G数据后，做数据分析，最终只保存分析结果。这样很大的临时数据如果常驻内存，将消耗大量内存资源，我们可以使用临时文件存储这些临时数据（外部存储）。     临时文件不用命名，且关闭后会自动被删除。
+	解决方案：使用标准库中tempfile下的TemporaryFile,NamedTemporaryFile.
+>>> from tempfile import TemporaryFile,NamedTemporaryFile
+>>> help(TemporaryFile)
+Help on function NamedTemporaryFile in module tempfile:
+
+NamedTemporaryFile(mode='w+b', buffering=-1, encoding=None, newline=None, suffix=None, prefix=None, dir=None, delete=True, *, errors=None)
+    Create and return a temporary file.
+    Arguments:
+    'prefix', 'suffix', 'dir' -- as for mkstemp.
+    'mode' -- the mode argument to io.open (default "w+b").
+    'buffering' -- the buffer size argument to io.open (default -1).
+    'encoding' -- the encoding argument to io.open (default None)
+    'newline' -- the newline argument to io.open (default None)
+    'delete' -- whether the file is deleted on close (default True).
+    'errors' -- the errors argument to io.open (default None)
+    The file is created as mkstemp() would do it.
+    
+    Returns an object with a file-like interface; the name of the file
+    is accessible as its 'name' attribute.  The file will be automatically
+    deleted when it is closed unless the 'delete' argument is set to False.
+
+>>> f = TemporaryFile()
+>>> f.write(b'abcdef' * 100000)
+600000
+>>> f.seek(0)
+0
+>>> f.read(100)
+b'abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd'
+>>> f.close()
+>>> ntf = NamedTemporaryFile()
+>>> ntf.name
+'C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\tmpn6m0hcmc'
+>>> ntf.close()
+>>> ntf.file
+<_io.BufferedRandom name=3>
+>>> 
