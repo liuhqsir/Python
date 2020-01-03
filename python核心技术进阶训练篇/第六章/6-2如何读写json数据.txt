@@ -1,0 +1,27 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+	如何读写json数据？   实际案例：在web应用中常用json格式传输数据，例如我们利用baidu语音识别服务做语音识别，将本地音频post到baidu语音识别服务器，服务器响应结果为json字符串：
+	{'corpus_no': '6776917373958710349', 'err_msg': 'success.', 'err_no': 0, 'result': ['北京科技馆。'], 'sn': '89113298601577874034'}
+	在python中如何读写json数据？
+	解决方案：使用标准库中的json模块，其中loads,dumps函数可以完成json数据的读写。
+>>> import json
+>>> l = [1,2,'abc',{'name':'bob','age':13}]
+>>> json.dumps(l)
+'[1, 2, "abc", {"name": "bob", "age": 13}]'
+>>> d={'b':None,'a':5,'c':'abc'}
+>>> json.dumps(d)
+'{"b": null, "a": 5, "c": "abc"}'
+>>> l = [1    ,    2,    'abc',{'name':'bob','age':13}]
+>>> json.dumps(l)
+'[1, 2, "abc", {"name": "bob", "age": 13}]'
+>>> json.dumps(l,separators=[',',':'])
+'[1,2,"abc",{"name":"bob","age":13}]'
+>>> json.dumps(d,sort_keys=True)
+'{"a": 5, "b": null, "c": "abc"}'
+>>> l2 = json.loads('[1, 2, "abc", {"name": "bob", "age": 13}]')
+>>> l2[2]
+'abc'
+>>> l2[3]
+{'name': 'bob', 'age': 13}
+>>> l2[3]['name']
+'bob'

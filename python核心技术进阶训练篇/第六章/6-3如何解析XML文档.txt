@@ -1,0 +1,148 @@
+Python 3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+	如何解析简单的XML文档？   
+	实际案例：XML是一种十分常用的标记性语言，可提供统一的方法来描述应用程序的结构化数据。   python中如何解析XML文档？
+>>> import os
+>>> os.chdir('d:\\git\\Python\\python核心技术进阶训练篇\\第六章')
+>>> os.getcwd()
+'d:\\git\\Python\\python核心技术进阶训练篇\\第六章'
+	解决方案：使用标准库中的xml.etree.ElementTree,其中的parse函数可以解析XML文档。
+>>> from xml.etree.ElementTree import parse
+>>> f = open('movies.xml')
+>>> et = parse(f)
+>>> root = et.getroot()
+>>> root
+<Element 'collection' at 0x0000000002B079A0>
+>>> root.tag
+'collection'
+>>> root.attrib
+{'shelf': 'New Arrivals'}
+>>> root.text
+'\n'
+>>> root.getchildren()
+		[<Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'movie' at 0x0000000002EA7DB0>,
+		 <Element 'movie' at 0x0000000002EAC130>,
+		 <Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('movie')
+		[<Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'movie' at 0x0000000002EA7DB0>,
+		 <Element 'movie' at 0x0000000002EAC130>,
+		 <Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('type')
+[]
+>>> root.iterfind('movie')
+<generator object prepare_child.<locals>.select at 0x0000000002E8C660>
+>>> for e in root.iterfind('movie'):
+	print(e.get('title'))
+		Enemy Behind
+		Transformers
+		Trigun
+		Ishtar
+>>> root.iter()
+<_elementtree._element_iterator object at 0x0000000002E9A860>
+>>> list(root.iter())
+		[<Element 'collection' at 0x0000000002B079A0>,
+		 <Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'type' at 0x0000000002E8A040>,
+		 <Element 'format' at 0x0000000002E95590>,
+		 <Element 'year' at 0x0000000002E9A8B0>,
+		 <Element 'rating' at 0x0000000002E9A950>,
+		 <Element 'stars' at 0x0000000002EA7EF0>,
+		 <Element 'description' at 0x0000000002EA7F40>,
+		 <Element 'movie' at 0x0000000002EA7DB0>,
+		 <Element 'type' at 0x0000000002EA7E00>,
+		 <Element 'format' at 0x0000000002EA7EA0>,
+		 <Element 'year' at 0x0000000002EAC220>,
+		 <Element 'rating' at 0x0000000002EAC2C0>,
+		 <Element 'stars' at 0x0000000002EAC090>,
+		 <Element 'description' at 0x0000000002EAC040>,
+		 <Element 'movie' at 0x0000000002EAC130>,
+		 <Element 'type' at 0x0000000002EAC180>,
+		 <Element 'format' at 0x0000000002EAC1D0>,
+		 <Element 'episodes' at 0x0000000002EAC360>,
+		 <Element 'rating' at 0x0000000002EAC3B0>,
+		 <Element 'stars' at 0x0000000002EAC400>,
+		 <Element 'description' at 0x0000000002EAC450>,
+		 <Element 'movie' at 0x0000000002EAC4F0>,
+		 <Element 'type' at 0x0000000002EAC540>,
+		 <Element 'format' at 0x0000000002EAC590>,
+		 <Element 'rating' at 0x0000000002EAC5E0>,
+		 <Element 'stars' at 0x0000000002EAC630>,
+		 <Element 'description' at 0x0000000002EAC680>]
+>>> list(root.iter('type'))
+		[<Element 'type' at 0x0000000002E8A040>,
+		 <Element 'type' at 0x0000000002EA7E00>,
+		 <Element 'type' at 0x0000000002EAC180>,
+		 <Element 'type' at 0x0000000002EAC540>]
+>>> root.findall('movie/*')
+		[<Element 'type' at 0x0000000002E8A040>,
+		 <Element 'format' at 0x0000000002E95590>,
+		 <Element 'year' at 0x0000000002E9A8B0>,
+		 <Element 'rating' at 0x0000000002E9A950>,
+		 <Element 'stars' at 0x0000000002EA7EF0>,
+		 <Element 'description' at 0x0000000002EA7F40>,
+		 <Element 'type' at 0x0000000002EA7E00>,
+		 <Element 'format' at 0x0000000002EA7EA0>,
+		 <Element 'year' at 0x0000000002EAC220>,
+		 <Element 'rating' at 0x0000000002EAC2C0>,
+		 <Element 'stars' at 0x0000000002EAC090>,
+		 <Element 'description' at 0x0000000002EAC040>,
+		 <Element 'type' at 0x0000000002EAC180>,
+		 <Element 'format' at 0x0000000002EAC1D0>,
+		 <Element 'episodes' at 0x0000000002EAC360>,
+		 <Element 'rating' at 0x0000000002EAC3B0>,
+		 <Element 'stars' at 0x0000000002EAC400>,
+		 <Element 'description' at 0x0000000002EAC450>,
+		 <Element 'type' at 0x0000000002EAC540>,
+		 <Element 'format' at 0x0000000002EAC590>,
+		 <Element 'rating' at 0x0000000002EAC5E0>,
+		 <Element 'stars' at 0x0000000002EAC630>,
+		 <Element 'description' at 0x0000000002EAC680>]
+>>> root
+<Element 'collection' at 0x0000000002B079A0>
+>>> root.findall('type')
+[]
+>>> root.findall('.//type')
+		[<Element 'type' at 0x0000000002E8A040>,
+		 <Element 'type' at 0x0000000002EA7E00>,
+		 <Element 'type' at 0x0000000002EAC180>,
+		 <Element 'type' at 0x0000000002EAC540>]
+>>> root.findall('.//type/..')
+		[<Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'movie' at 0x0000000002EA7DB0>,
+		 <Element 'movie' at 0x0000000002EAC130>,
+		 <Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('movie[@starts]')
+		[]
+>>> root.findall('movie[@stars]')
+		[]
+>>> root.findall('movie[stars]')
+		[<Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'movie' at 0x0000000002EA7DB0>,
+		 <Element 'movie' at 0x0000000002EAC130>,
+		 <Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('movie')
+		[<Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'movie' at 0x0000000002EA7DB0>,
+		 <Element 'movie' at 0x0000000002EAC130>,
+		 <Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('movie[title = "Ishtar"]')
+		[]
+>>> root.findall('movie[@title = "Ishtar"]')
+		[<Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('movie[stars = "10"]')
+		[<Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'movie' at 0x0000000002EAC130>]
+>>> root.findall('movie')
+		[<Element 'movie' at 0x0000000002E7A630>,
+		 <Element 'movie' at 0x0000000002EA7DB0>,
+		 <Element 'movie' at 0x0000000002EAC130>,
+		 <Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('movie[2]')
+		[<Element 'movie' at 0x0000000002EA7DB0>]
+>>> root.findall('movie[last()]')
+		[<Element 'movie' at 0x0000000002EAC4F0>]
+>>> root.findall('movie[last()-1]')
+		[<Element 'movie' at 0x0000000002EAC130>]
+>>> 
